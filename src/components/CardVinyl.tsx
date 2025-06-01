@@ -1,19 +1,17 @@
-import React from "react";
-import {
-  Animated,
-  Modal,
-  Pressable,
-  StyleSheet,
-  View,
-  Image,
-  Text,
-} from "react-native";
+import React, { useEffect } from "react";
+import { Animated, Modal, Pressable, View, Image, Text } from "react-native";
 import { Button } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Vinyl } from "../type/Vinyl";
 import { CardVinylStyles } from "../style/styles";
+import { deleteVinyl } from "../database/Database";
 
-const CardVinyl = (vinyl: Vinyl) => {
+interface CardVinylProps {
+  vinyl: Vinyl;
+  onDeleteVinyl: (vinyl: Vinyl) => void;
+}
+
+const CardVinyl = (props: CardVinylProps) => {
   const [viewCover, setViewCover] = React.useState(false); // pour afficher la cover en grand
   const [showOptions, setShowOptions] = React.useState(false); // pour afficher le menu d'options
   const scaleAnim = React.useRef(new Animated.Value(0)).current;
@@ -52,7 +50,7 @@ const CardVinyl = (vinyl: Vinyl) => {
   };
 
   const handleDelete = () => {
-    console.log("Delete");
+    props.onDeleteVinyl(props.vinyl);
   };
 
   return (
@@ -64,9 +62,9 @@ const CardVinyl = (vinyl: Vinyl) => {
         delayLongPress={150}
       >
         <View>
-          {vinyl.coverPath ? (
+          {props.vinyl.coverPath ? (
             <Image
-              source={{ uri: vinyl.coverPath }}
+              source={{ uri: props.vinyl.coverPath }}
               style={CardVinylStyles.image}
             />
           ) : (
@@ -75,9 +73,10 @@ const CardVinyl = (vinyl: Vinyl) => {
             </View>
           )}
 
-          <Text style={CardVinylStyles.title}>{vinyl.title}</Text>
+          <Text style={CardVinylStyles.title}>{props.vinyl.title}</Text>
           <Text style={CardVinylStyles.artist}>
-            {vinyl.artist + (vinyl.releaseYear && " - " + vinyl.releaseYear)}
+            {props.vinyl.artist +
+              (props.vinyl.releaseYear && " - " + props.vinyl.releaseYear)}
           </Text>
         </View>
       </Pressable>
@@ -86,7 +85,7 @@ const CardVinyl = (vinyl: Vinyl) => {
       <Modal visible={viewCover} transparent animationType="none">
         <Pressable style={CardVinylStyles.modalBackground} onPress={closeModal}>
           <Animated.Image
-            source={{ uri: vinyl.coverPath }}
+            source={{ uri: props.vinyl.coverPath }}
             style={[
               CardVinylStyles.fullScreenImage,
               { transform: [{ scale: scaleAnim }] },
@@ -116,7 +115,7 @@ const CardVinyl = (vinyl: Vinyl) => {
             </Button>
             <Button
               mode="contained"
-              onPress={handleEdit}
+              onPress={handleDelete}
               style={CardVinylStyles.button}
             >
               Supprimer

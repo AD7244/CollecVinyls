@@ -29,7 +29,7 @@ export const initDB = async () => {
     console.log("✅ Base de données initialisée avec succès.");
   } catch (error) {
     console.log(
-      "❌ Erreur lors de l'initialisation de la base de données :",
+      "❌ Erreur lors de l'initialisation de la base de données : ",
       error
     );
   }
@@ -42,7 +42,7 @@ export const getVinyls = async () => {
 
     return allVinyls;
   } catch (error) {
-    console.log("❌ Erreur dans la fonction getVinyls", error);
+    console.log("❌ Erreur dans la fonction getVinyls ", error);
   }
 };
 
@@ -55,12 +55,11 @@ export const getWishedVinyls = async () => {
 
     return wishedVinyls;
   } catch (error) {
-    console.log("❌ Erreur dans la fonction getVinyls", error);
+    console.log("❌ Erreur dans la fonction getVinyls ", error);
   }
 };
 
 export const addVinyl = async (vinyl: NewVinyl) => {
-  console.log("vinnylToAdd", vinyl);
   try {
     const db = await openDatabase();
     await db.runAsync(
@@ -74,7 +73,21 @@ export const addVinyl = async (vinyl: NewVinyl) => {
       vinyl.status
     );
   } catch (error) {
-    console.log("❌ Erreur dans la fonction addVinyl", error);
+    console.log("❌ Erreur dans la fonction addVinyl ", error);
+  }
+};
+
+export const deleteVinyl = async (vinyl: Vinyl) => {
+  console.log("vinylToDelete : ", vinyl);
+  try {
+    const db = await openDatabase();
+    const allVinyls = await db.getAllAsync<Vinyl>("SELECT * FROM vinyls");
+    console.log("allVinyls", allVinyls);
+    await db.runAsync(`DELETE FROM vinyls WHERE id = ${vinyl.id}`);
+    const allVinylsAfter = await db.getAllAsync<Vinyl>("SELECT * FROM vinyls");
+    console.log("allVinylsAfter", allVinylsAfter);
+  } catch (error) {
+    console.log("❌ Erreur dans la fonction deleteVinyl ", error);
   }
 };
 

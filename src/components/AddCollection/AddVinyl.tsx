@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Image } from "react-native";
 import { TextInput, Button, RadioButton, Text } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../../navigation/types";
 import { useNavigation } from "@react-navigation/native";
-import { addVinyl, getVinyls } from "../../database/Database";
+import { addVinyl } from "../../database/Database";
 import { NewVinyl } from "../../type/Vinyl";
 import { AddVinylstyles } from "../../style/styles";
 
@@ -17,7 +19,7 @@ const AddVinyl = () => {
   const [coverPath, setCoverPath] = useState("");
   const [status, setStatus] = useState<"wish" | "got">("wish");
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const handlePickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({

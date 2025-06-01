@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { PaperProvider, IconButton } from "react-native-paper";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import {
   createDrawerNavigator,
   DrawerNavigationProp,
@@ -18,8 +18,6 @@ const Stack = createStackNavigator();
 type DrawerNav = DrawerNavigationProp<any>;
 
 function HomeStack() {
-  const navigation = useNavigation<DrawerNav>();
-
   return (
     <Stack.Navigator>
       {/*Pour la sidebar de navigation*/}
@@ -27,7 +25,7 @@ function HomeStack() {
         name="Home"
         component={Home}
         options={({ navigation }) => ({
-          title: "CollecVinyl",
+          title: "CollecVinyls",
           headerLeft: () => (
             <IconButton icon="menu" onPress={() => navigation.openDrawer()} />
           ),

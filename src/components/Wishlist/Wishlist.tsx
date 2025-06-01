@@ -1,7 +1,11 @@
 import React, { useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import CardVinyl from "../CardVinyl";
-import { getVinyls, getWishedVinyls } from "../../database/Database";
+import {
+  deleteVinyl,
+  getVinyls,
+  getWishedVinyls,
+} from "../../database/Database";
 import { Vinyl } from "../../type/Vinyl";
 
 const styles = StyleSheet.create({
@@ -27,6 +31,14 @@ const Wishlist = () => {
     setAllVinyls(wishedVinyls);
   };
 
+  const handleDeleteVinyl = (vinylToDelete: Vinyl) => {
+    // Supprime le vinyle de l'état local
+    setAllVinyls((prevVinyls) =>
+      prevVinyls!.filter((vinyl) => vinyl.id !== vinylToDelete.id)
+    );
+    deleteVinyl(vinylToDelete); // On supprime le vinyle de la base de données aussi
+  };
+
   useEffect(() => {
     handleGetWishedVinyls();
   }, []);
@@ -34,7 +46,11 @@ const Wishlist = () => {
     <ScrollView>
       <View style={styles.grid}>
         {allVinyls?.map((vinyl) => (
-          <CardVinyl key={vinyl.id} {...vinyl} />
+          <CardVinyl
+            key={vinyl.id}
+            vinyl={vinyl}
+            onDeleteVinyl={handleDeleteVinyl}
+          />
         ))}
       </View>
     </ScrollView>
