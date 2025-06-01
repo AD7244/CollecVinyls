@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import CardVinyl from "../CardVinyl";
-import { deleteVinyl, getWishedVinyls } from "../../database/Database";
+import { deleteVinyl, getCollectedVinyls } from "../../database/Database";
 import { Vinyl } from "../../type/Vinyl";
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -20,17 +20,18 @@ const styles = StyleSheet.create({
   },
 });
 
-const Wishlist = () => {
-  const [allWishedVinyls, setAllWishedVinyls] = React.useState<Vinyl[]>();
+const Collection = () => {
+  const [allCollectedVinyls, setAllCollectedVinyls] = React.useState<Vinyl[]>();
 
-  const handleGetWishedVinyls = async () => {
-    const wishedVinyls = await getWishedVinyls();
-    setAllWishedVinyls(wishedVinyls);
+  const handleGetCollectedVinyls = async () => {
+    const collectedVinyls = await getCollectedVinyls();
+    console.log("collectedVinyls", collectedVinyls);
+    setAllCollectedVinyls(collectedVinyls);
   };
 
   const handleDeleteVinyl = (vinylToDelete: Vinyl) => {
     // Supprime le vinyle de l'état local
-    setAllWishedVinyls((prevVinyls) =>
+    setAllCollectedVinyls((prevVinyls) =>
       prevVinyls!.filter((vinyl) => vinyl.id !== vinylToDelete.id)
     );
     deleteVinyl(vinylToDelete); // On supprime le vinyle de la base de données aussi
@@ -38,19 +39,19 @@ const Wishlist = () => {
 
   useFocusEffect(
     useCallback(() => {
-      handleGetWishedVinyls();
+      handleGetCollectedVinyls();
     }, [])
   );
   useEffect(() => {
-    handleGetWishedVinyls();
+    handleGetCollectedVinyls();
   }, []);
   return (
     <ScrollView>
       <View style={styles.grid}>
-        {allWishedVinyls?.map((wishedVinyl) => (
+        {allCollectedVinyls?.map((allCollectedVinyls) => (
           <CardVinyl
-            key={wishedVinyl.id}
-            vinyl={wishedVinyl}
+            key={allCollectedVinyls.id}
+            vinyl={allCollectedVinyls}
             onDeleteVinyl={handleDeleteVinyl}
           />
         ))}
@@ -59,4 +60,4 @@ const Wishlist = () => {
   );
 };
 
-export default Wishlist;
+export default Collection;

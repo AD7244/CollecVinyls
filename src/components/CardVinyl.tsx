@@ -2,6 +2,9 @@ import React, { useEffect } from "react";
 import { Animated, Modal, Pressable, View, Image, Text } from "react-native";
 import { Button } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../../navigation/types";
 import { Vinyl } from "../type/Vinyl";
 import { CardVinylStyles } from "../style/styles";
 import { deleteVinyl } from "../database/Database";
@@ -15,6 +18,8 @@ const CardVinyl = (props: CardVinylProps) => {
   const [viewCover, setViewCover] = React.useState(false); // pour afficher la cover en grand
   const [showOptions, setShowOptions] = React.useState(false); // pour afficher le menu d'options
   const scaleAnim = React.useRef(new Animated.Value(0)).current;
+
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const openModal = () => {
     setViewCover(true);
@@ -46,7 +51,9 @@ const CardVinyl = (props: CardVinylProps) => {
   };
 
   const handleEdit = () => {
-    console.log("Edit");
+    navigation.navigate("Add", {
+      vinyl: props.vinyl,
+    });
   };
 
   const handleDelete = () => {

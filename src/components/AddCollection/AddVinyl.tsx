@@ -1,23 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, StyleSheet, Image } from "react-native";
 import { TextInput, Button, RadioButton, Text } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../navigation/types";
-import { useNavigation } from "@react-navigation/native";
-import { addVinyl } from "../../database/Database";
-import { NewVinyl } from "../../type/Vinyl";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { addVinyl, updateVinyl } from "../../database/Database";
+import { Vinyl, NewVinyl } from "../../type/Vinyl";
 import { AddVinylstyles } from "../../style/styles";
 
 const AddVinyl = () => {
-  const [artist, setArtist] = useState("");
-  const [title, setTitle] = useState("");
-  const [releaseYear, setReleaseYear] = useState("");
-  const [addedDate, setAddedDate] = useState(
-    new Date().toISOString().split("T")[0]
+  const route = useRoute();
+  const { vinyl } = (route.params || {}) as { vinyl?: Vinyl };
+
+  const id = useRef(vinyl?.id || 0); // Utilisé pour l'édition, sinon 0 pour un nouvel ajout
+  const [artist, setArtist] = useState(vinyl?.artist || "");
+  const [title, setTitle] = useState(vinyl?.title || "");
+  const [releaseYear, setReleaseYear] = useState(
+    vinyl?.releaseYear?.toString() || ""
   );
-  const [coverPath, setCoverPath] = useState("");
-  const [status, setStatus] = useState<"wish" | "got">("wish");
+  const [addedDate, setAddedDate] = useState(
+    vinyl?.addedDate || new Date().toISOString().split("T")[0]
+  );
+  const [coverPath, setCoverPath] = useState(vinyl?.coverPath || "");
+  const [status, setStatus] = useState<"wish" | "got">(vinyl?.status || "wish");
 
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
@@ -36,16 +42,29 @@ const AddVinyl = () => {
   const handleSubmit = async () => {
     if (!artist || !title || !status || !addedDate) return;
 
-    const vinyl: NewVinyl = {
-      artist,
-      title,
-      releaseYear: releaseYear ? parseInt(releaseYear, 10) : undefined,
-      addedDate,
-      coverPath,
-      status,
-    };
+    if (id.current === 0) {
+      const vinyl: NewVinyl = {
+        artist,
+        title,
+        releaseYear: releaseYear ? parseInt(releaseYear, 10) : undefined,
+        addedDate,
+        coverPath,
+        status,
+      };
+      await addVinyl(vinyl);
+    } else {
+      const updatedVinyl: Vinyl = {
+        id: id.current,
+        artist,
+        title,
+        releaseYear: releaseYear ? parseInt(releaseYear, 10) : undefined,
+        addedDate,
+        coverPath,
+        status,
+      };
+      await updateVinyl(updatedVinyl);
+    }
 
-    await addVinyl(vinyl);
     navigation.navigate("Home");
   };
 

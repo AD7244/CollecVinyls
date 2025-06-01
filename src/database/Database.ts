@@ -59,6 +59,19 @@ export const getWishedVinyls = async () => {
   }
 };
 
+export const getCollectedVinyls = async () => {
+  try {
+    const db = await openDatabase();
+    const collectedVinyls = await db.getAllAsync<Vinyl>(
+      "SELECT * FROM vinyls WHERE status = 'got'"
+    );
+
+    return collectedVinyls;
+  } catch (error) {
+    console.log("❌ Erreur dans la fonction getVinyls ", error);
+  }
+};
+
 export const addVinyl = async (vinyl: NewVinyl) => {
   try {
     const db = await openDatabase();
@@ -77,15 +90,28 @@ export const addVinyl = async (vinyl: NewVinyl) => {
   }
 };
 
-export const deleteVinyl = async (vinyl: Vinyl) => {
-  console.log("vinylToDelete : ", vinyl);
+export const updateVinyl = async (vinyl: Vinyl) => {
   try {
     const db = await openDatabase();
-    const allVinyls = await db.getAllAsync<Vinyl>("SELECT * FROM vinyls");
-    console.log("allVinyls", allVinyls);
+    await db.runAsync(
+      `UPDATE vinyls SET artist = ?, title = ?, releaseYear = ?, addedDate = ?, coverPath = ?, status = ? WHERE id = ?`,
+      vinyl.artist,
+      vinyl.title,
+      vinyl.releaseYear ? vinyl.releaseYear : "",
+      vinyl.addedDate,
+      vinyl.coverPath ? vinyl.coverPath : "",
+      vinyl.status,
+      vinyl.id
+    );
+  } catch (error) {
+    console.log("❌ Erreur dans la fonction updateVinyl ", error);
+  }
+};
+
+export const deleteVinyl = async (vinyl: Vinyl) => {
+  try {
+    const db = await openDatabase();
     await db.runAsync(`DELETE FROM vinyls WHERE id = ${vinyl.id}`);
-    const allVinylsAfter = await db.getAllAsync<Vinyl>("SELECT * FROM vinyls");
-    console.log("allVinylsAfter", allVinylsAfter);
   } catch (error) {
     console.log("❌ Erreur dans la fonction deleteVinyl ", error);
   }
