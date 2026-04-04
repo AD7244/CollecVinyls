@@ -15,7 +15,6 @@ const Home = () => {
   //! BUG : Cette fonction n'est pas appelé à l'ouverture. Ainsi si je supprime un vinyl depuis la wishlist, je le vois toujours ici
   const handleGetVinyls = async () => {
     const allVinyls = await getVinyls();
-    console.log("allVinyls", allVinyls);
     setAllVinyls(allVinyls);
   };
 
@@ -59,7 +58,10 @@ const Home = () => {
             backgroundColor: "primary",
           }}
         >
-          <Button mode="contained" onPress={() => navigation.navigate("Add")}>
+          <Button
+            mode="contained"
+            onPress={() => navigation.navigate("AddOrModify")}
+          >
             Ajouter mon premier vinyle
           </Button>
         </View>

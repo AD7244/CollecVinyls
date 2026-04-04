@@ -25,7 +25,6 @@ const Collection = () => {
 
   const handleGetCollectedVinyls = async () => {
     const collectedVinyls = await getCollectedVinyls();
-    console.log("collectedVinyls", collectedVinyls);
     setAllCollectedVinyls(collectedVinyls);
   };
 

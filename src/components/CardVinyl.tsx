@@ -22,14 +22,16 @@ const CardVinyl = (props: CardVinylProps) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const openModal = () => {
-    setViewCover(true);
-    setTimeout(() => {
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    }, 10); // petit delay pour laisser le Modal apparaître
+    if (props.vinyl.coverPath) {
+      setViewCover(true);
+      setTimeout(() => {
+        Animated.timing(scaleAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+      }, 10); // petit delay pour laisser le Modal apparaître
+    }
   };
 
   const closeModal = () => {
@@ -51,8 +53,9 @@ const CardVinyl = (props: CardVinylProps) => {
   };
 
   const handleEdit = () => {
-    navigation.navigate("Add", {
+    navigation.navigate("AddOrModify", {
       vinyl: props.vinyl,
+      modify: true,
     });
   };
 

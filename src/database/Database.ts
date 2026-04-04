@@ -2,8 +2,13 @@ import * as SQLite from "expo-sqlite";
 import { NewVinyl, Vinyl } from "../type/Vinyl";
 
 // Ouvre la base de données de manière asynchrone
+
+let db: SQLite.SQLiteDatabase | null = null;
+
 const openDatabase = async () => {
-  const db = await SQLite.openDatabaseAsync("vinyls.db");
+  if (!db) {
+    db = await SQLite.openDatabaseAsync("vinyls.db");
+  }
   return db;
 };
 
@@ -26,7 +31,6 @@ export const initDB = async () => {
       
     `);
     // DELETE FROM vinyls;
-    console.log("✅ Base de données initialisée avec succès.");
   } catch (error) {
     console.log(
       "❌ Erreur lors de l'initialisation de la base de données : ",
@@ -38,6 +42,7 @@ export const initDB = async () => {
 export const getVinyls = async () => {
   try {
     const db = await openDatabase();
+
     const allVinyls = await db.getAllAsync<Vinyl>("SELECT * FROM vinyls");
 
     return allVinyls;
@@ -55,7 +60,7 @@ export const getWishedVinyls = async () => {
 
     return wishedVinyls;
   } catch (error) {
-    console.log("❌ Erreur dans la fonction getVinyls ", error);
+    console.log("❌ Erreur dans la fonction getWishedVinyls ", error);
   }
 };
 
@@ -68,7 +73,7 @@ export const getCollectedVinyls = async () => {
 
     return collectedVinyls;
   } catch (error) {
-    console.log("❌ Erreur dans la fonction getVinyls ", error);
+    console.log("❌ Erreur dans la fonction getCollectedVinyls ", error);
   }
 };
 
@@ -116,5 +121,3 @@ export const deleteVinyl = async (vinyl: Vinyl) => {
     console.log("❌ Erreur dans la fonction deleteVinyl ", error);
   }
 };
-
-export default openDatabase;

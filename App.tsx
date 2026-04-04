@@ -33,14 +33,14 @@ function HomeStack() {
           headerRight: () => (
             <IconButton
               icon="plus"
-              onPress={() => navigation.navigate("Add")}
+              onPress={() => navigation.navigate("AddOrModify")}
             />
           ),
         })}
       />
       <Stack.Screen
-        name="Add"
-        options={({ navigation }) => ({ title: "Ajouter un vinyle" })}
+        name="AddOrModify"
+        options={({}) => ({ title: "Ajouter un vinyle" })}
         component={AddVinyl}
       />
     </Stack.Navigator>
@@ -62,13 +62,13 @@ function WishlistStack() {
           headerRight: () => (
             <IconButton
               icon="plus"
-              onPress={() => navigation.navigate("Add")}
+              onPress={() => navigation.navigate("AddOrModify")}
             />
           ),
         })}
       />
       <Stack.Screen
-        name="Add"
+        name="AddOrModify"
         options={({ navigation }) => ({ title: "Ajouter un vinyle" })}
         component={AddVinyl}
       />
@@ -91,13 +91,13 @@ function CollectionStack() {
           headerRight: () => (
             <IconButton
               icon="plus"
-              onPress={() => navigation.navigate("Add")}
+              onPress={() => navigation.navigate("AddOrModify")}
             />
           ),
         })}
       />
       <Stack.Screen
-        name="Add"
+        name="AddOrModify"
         options={({ navigation }) => ({ title: "Ajouter un vinyle" })}
         component={AddVinyl}
       />
