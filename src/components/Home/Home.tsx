@@ -3,11 +3,11 @@ import { View, Text, ScrollView } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../navigation/types";
-import { Button } from "react-native-paper";
+import { Button, useTheme } from "react-native-paper";
 import CardVinyl from "../CardVinyl";
 import { deleteVinyl, getVinyls } from "../../database/Database";
 import { Vinyl } from "../../type/Vinyl";
-import { HomeStyles } from "../../style/styles";
+import { getHomeStyles, HomeStyles } from "../../style/styles";
 
 const Home = () => {
   const [allVinyls, setAllVinyls] = React.useState<Vinyl[]>();
@@ -21,7 +21,7 @@ const Home = () => {
   const handleDeleteVinyl = (vinylToDelete: Vinyl) => {
     // Supprime le vinyle de l'état local
     setAllVinyls((prevVinyls) =>
-      prevVinyls!.filter((vinyl) => vinyl.id !== vinylToDelete.id)
+      prevVinyls!.filter((vinyl) => vinyl.id !== vinylToDelete.id),
     );
     deleteVinyl(vinylToDelete); // On supprime le vinyle de la base de données aussi
   };
@@ -30,7 +30,7 @@ const Home = () => {
   useFocusEffect(
     useCallback(() => {
       handleGetVinyls();
-    }, [])
+    }, []),
   );
 
   useEffect(() => {
@@ -39,12 +39,15 @@ const Home = () => {
 
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
+  const theme = useTheme();
+  const styles = getHomeStyles(theme);
+
   return (
     <>
       <View>
-        <Text style={HomeStyles.title}>
+        <Text style={styles.title}>
           {allVinyls?.length === 0
-            ? "Aucun  Vinyle dans la collection"
+            ? "Aucun Vinyle dans la collection"
             : "Derniers ajouts dans la collec"}
         </Text>
       </View>
@@ -67,7 +70,7 @@ const Home = () => {
         </View>
       )}
 
-      <ScrollView contentContainerStyle={HomeStyles.grid}>
+      <ScrollView contentContainerStyle={styles.grid}>
         {allVinyls
           ?.slice(-4)
           .reverse()
