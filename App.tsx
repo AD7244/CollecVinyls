@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useMemo, createContext } from "react";
+import { useColorScheme } from "react-native";
 import { PaperProvider, IconButton } from "react-native-paper";
 import { NavigationContainer } from "@react-navigation/native";
 import {
@@ -12,11 +13,46 @@ import AddVinyl from "./src/components/AddCollection/AddVinyl";
 import { initDB } from "./src/database/Database";
 import Wishlist from "./src/components/Wishlist/Wishlist";
 import Collection from "./src/components/Collection/Collection";
+import {
+  MD3LightTheme,
+  MD3DarkTheme,
+  adaptNavigationTheme,
+  MD3Theme,
+} from "react-native-paper";
+import {
+  DefaultTheme as NavigationDefaultTheme,
+  DarkTheme as NavigationDarkTheme,
+} from "@react-navigation/native";
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
 type DrawerNav = DrawerNavigationProp<any>;
+
+const { LightTheme, DarkTheme } = adaptNavigationTheme({
+  reactNavigationLight: NavigationDefaultTheme,
+  reactNavigationDark: NavigationDarkTheme,
+});
+
+const CombinedDefaultTheme = {
+  ...MD3LightTheme,
+  ...LightTheme,
+  colors: {
+    ...MD3LightTheme.colors,
+    ...LightTheme.colors,
+  },
+  fonts: MD3LightTheme.fonts, // On force les fonts de Paper
+} as unknown as MD3Theme;
+
+const CombinedDarkTheme = {
+  ...MD3DarkTheme,
+  ...DarkTheme,
+  colors: {
+    ...MD3DarkTheme.colors,
+    ...DarkTheme.colors,
+  },
+  fonts: MD3DarkTheme.fonts, // On force les fonts de Paper
+} as unknown as MD3Theme;
 
 function HomeStack() {
   return (
@@ -105,33 +141,57 @@ function CollectionStack() {
   );
 }
 
+export const ThemeContext = createContext({
+  toggleTheme: () => {},
+  isDarkTheme: true,
+});
+
 export default function App() {
+  const colorScheme = useColorScheme(); // 'light' ou 'dark'
+  const [isDarkTheme, setIsDarkTheme] = useState(colorScheme === "dark");
+
   useEffect(() => {
     //crée la BDD si n'existe pas
     initDB();
   }, []);
 
+  const themeContext = useMemo(
+    () => ({
+      toggleTheme: () => setIsDarkTheme((prev) => !prev),
+      isDarkTheme,
+    }),
+    [isDarkTheme],
+  );
+
+  useEffect(() => {
+    setIsDarkTheme(colorScheme === "dark");
+  }, [colorScheme]);
+
+  const theme = isDarkTheme ? CombinedDarkTheme : CombinedDefaultTheme;
+
   return (
-    <PaperProvider>
-      <NavigationContainer>
-        <Drawer.Navigator>
-          <Drawer.Screen
-            name="Accueil"
-            component={HomeStack}
-            options={{ headerShown: false }}
-          />
-          <Drawer.Screen
-            name="Wishlist"
-            component={WishlistStack}
-            options={{ headerShown: false }}
-          />
-          <Drawer.Screen
-            name="Collection"
-            component={CollectionStack}
-            options={{ headerShown: false }}
-          />
-        </Drawer.Navigator>
-      </NavigationContainer>
-    </PaperProvider>
+    <ThemeContext.Provider value={themeContext}>
+      <PaperProvider theme={theme as unknown as MD3Theme}>
+        <NavigationContainer theme={theme as any}>
+          <Drawer.Navigator>
+            <Drawer.Screen
+              name="Accueil"
+              component={HomeStack}
+              options={{ headerShown: false }}
+            />
+            <Drawer.Screen
+              name="Wishlist"
+              component={WishlistStack}
+              options={{ headerShown: false }}
+            />
+            <Drawer.Screen
+              name="Collection"
+              component={CollectionStack}
+              options={{ headerShown: false }}
+            />
+          </Drawer.Navigator>
+        </NavigationContainer>
+      </PaperProvider>
+    </ThemeContext.Provider>
   );
 }

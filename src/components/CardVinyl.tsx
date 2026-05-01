@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import { Animated, Modal, Pressable, View, Image, Text } from "react-native";
-import { Button } from "react-native-paper";
+import { Button, useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../navigation/types";
 import { Vinyl } from "../type/Vinyl";
-import { CardVinylStyles } from "../style/styles";
+import { CardVinylStyles, getCardStyles } from "../style/styles";
 import { deleteVinyl } from "../database/Database";
 
 interface CardVinylProps {
@@ -20,6 +20,9 @@ const CardVinyl = (props: CardVinylProps) => {
   const scaleAnim = React.useRef(new Animated.Value(0)).current;
 
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
+  const theme = useTheme();
+  const styles = getCardStyles(theme);
 
   const openModal = () => {
     if (props.vinyl.coverPath) {
@@ -66,7 +69,7 @@ const CardVinyl = (props: CardVinylProps) => {
   return (
     <>
       <Pressable
-        style={CardVinylStyles.card}
+        style={styles.card}
         onPress={openModal}
         onLongPress={handleLongPress}
         delayLongPress={150}
@@ -75,16 +78,16 @@ const CardVinyl = (props: CardVinylProps) => {
           {props.vinyl.coverPath ? (
             <Image
               source={{ uri: props.vinyl.coverPath }}
-              style={CardVinylStyles.image}
+              style={styles.image}
             />
           ) : (
-            <View style={CardVinylStyles.placeholder}>
+            <View style={styles.placeholder}>
               <MaterialCommunityIcons name="album" size={40} color="#aaa" />
             </View>
           )}
 
-          <Text style={CardVinylStyles.title}>{props.vinyl.title}</Text>
-          <Text style={CardVinylStyles.artist}>
+          <Text style={styles.title}>{props.vinyl.title}</Text>
+          <Text style={styles.artist}>
             {props.vinyl.artist +
               (props.vinyl.releaseYear && " - " + props.vinyl.releaseYear)}
           </Text>
@@ -93,11 +96,11 @@ const CardVinyl = (props: CardVinylProps) => {
 
       {/* Modal pour afficher la cover en grand */}
       <Modal visible={viewCover} transparent animationType="none">
-        <Pressable style={CardVinylStyles.modalBackground} onPress={closeModal}>
+        <Pressable style={styles.modalBackground} onPress={closeModal}>
           <Animated.Image
             source={{ uri: props.vinyl.coverPath }}
             style={[
-              CardVinylStyles.fullScreenImage,
+              styles.fullScreenImage,
               { transform: [{ scale: scaleAnim }] },
             ]}
           />
@@ -115,18 +118,14 @@ const CardVinyl = (props: CardVinylProps) => {
           style={{ flex: 1, justifyContent: "flex-end" }}
           onPress={closeOptions}
         >
-          <View style={CardVinylStyles.modalContainer}>
-            <Button
-              mode="contained"
-              onPress={handleEdit}
-              style={CardVinylStyles.button}
-            >
+          <View style={styles.modalContainer}>
+            <Button mode="contained" onPress={handleEdit} style={styles.button}>
               Modifier
             </Button>
             <Button
               mode="contained"
               onPress={handleDelete}
-              style={CardVinylStyles.button}
+              style={styles.button}
             >
               Supprimer
             </Button>
